@@ -1,8 +1,55 @@
 import numpy as np
-from skbio.stats.composition import closure
+# from skbio.stats.composition import closure
 # need to ignore log of zero warning
 np.seterr(all='ignore')
 
+def closure(mat, *, out=None):
+    """
+    Performs closure to ensure that all elements add up to 1.
+    Parameters
+    ----------
+    mat : array_like
+       a matrix of proportions where
+       rows = compositions
+       columns = components
+    out : array_like or None, optional
+        A location into which the result is stored. If provided, it must have
+        a shape that the inputs broadcast to. If not provided or None, a
+        freshly-allocated array is returned.
+    Returns
+    -------
+    array_like, np.float64
+       A matrix of proportions where all of the values
+       are nonzero and each composition (row) adds up to 1
+    Raises
+    ------
+    ValueError
+       Raises an error if any values are negative.
+    ValueError
+       Raises an error if the matrix has more than 2 dimension.
+    ValueError
+       Raises an error if there is a row that has all zeros.
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from composition_stats import closure
+    >>> X = np.array([[2, 2, 6], [4, 4, 2]])
+    >>> closure(X)
+    array([[ 0.2,  0.2,  0.6],
+           [ 0.4,  0.4,  0.2]])
+    from: https://github.com/ntessore/composition_stats/blob/main/composition_stats/__init__.py
+    """
+    mat = np.atleast_2d(mat)
+    if out is not None:
+        out = np.atleast_2d(out)
+    if np.any(mat < 0):
+        raise ValueError("Cannot have negative proportions")
+    if mat.ndim > 2:
+        raise ValueError("Input matrix can only have two dimensions or less")
+    norm = mat.sum(axis=1, keepdims=True)
+    if np.any(norm == 0):
+        raise ValueError("Input matrix cannot have rows with all zeros")
+    return np.divide(mat, norm, out=out).squeeze()
 
 def rclr(mat):
     """
