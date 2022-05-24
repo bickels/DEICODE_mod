@@ -1,7 +1,7 @@
 # import biom
 # import skbio
 import numpy as np
-# import pandas as pd
+import pandas as pd
 from deicode.matrix_completion import MatrixCompletion
 from deicode.preprocessing import rclr
 
@@ -53,7 +53,7 @@ def rpca(table,
     # get new n-comp when applicable
     n_components = opt.s.shape[0]
     # get PC column labels for the skbio OrdinationResults
-    # rename_cols = ['PC' + str(i + 1) for i in range(n_components)]
+    rename_cols = ['PC' + str(i + 1) for i in range(n_components)]
     # get completed matrix for centering
     X = opt.sample_weights @ opt.s @ opt.feature_weights.T
     # center again around zero after completion
@@ -69,14 +69,14 @@ def rpca(table,
     p = p[:n_components]
     s = s[:n_components]
     # save the loadings
-    feature_loading = v#pd.DataFrame(v, index=table.columns,
-                                   # columns=rename_cols)
-    sample_loading = u#pd.DataFrame(u, index=table.index,
-                                  # columns=rename_cols)
+    feature_loading = pd.DataFrame(v, index=table.columns,
+                                   columns=rename_cols)
+    sample_loading = pd.DataFrame(u, index=table.index,
+                                  columns=rename_cols)
     # % var explained
-    proportion_explained = p#pd.Series(p, index=rename_cols)
+    proportion_explained = pd.Series(p, index=rename_cols)
     # get eigenvalues
-    eigvals = s#pd.Series(s, index=rename_cols)
+    eigvals = pd.Series(s, index=rename_cols)
 
     # if the n_components is two add PC3 of zeros
     # this is referenced as in issue in
@@ -100,7 +100,8 @@ def rpca(table,
     #     features=feature_loading.copy(),
     #     proportion_explained=proportion_explained.copy())
     # save distance matrix
-    dist_res = opt.distance#skbio.stats.distance.DistanceMatrix(
+    dist_res = p= pd.DataFrame(opt.distance, index=sample_loading.index,
+                                   columns=sample_loading.index)#skbio.stats.distance.DistanceMatrix(
         # opt.distance, ids=sample_loading.index)
 
     return dict(eig=eigvals, smp=sample_loading, feat=feature_loading, pexp=proportion_explained), dist_res#ord_res, dist_res

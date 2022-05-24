@@ -188,7 +188,9 @@ class OptSpace(object):
             # if the gradient decent has coverged then break the loop
             # and return the results
             if(dist[i + 1] < self.tol):
+                print(f'Convergence at {i} iterations.')
                 break
+            print(f'Iteration {i}')
         # compensates the smaller average size of
         # observed values vs. missing
         S = S / rescal_param
